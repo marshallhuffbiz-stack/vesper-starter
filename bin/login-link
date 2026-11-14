@@ -1,0 +1,8 @@
+#!/bin/zsh
+# Print a one-time Vesper sign-in link (valid 30 minutes, single use). Open it on the phone or Mac that should be
+# signed in; the app also takes the code from the link pasted into its sign-in screen.
+source "${0:A:h}/env.sh"
+find_node || exit 1
+MAIN=$VESPER_HOME/current/server/main.mjs
+[[ -f $MAIN ]] || MAIN=${0:A:h:h}/server/main.mjs
+VESPER_HOME=$VESPER_HOME VESPER_CONFIG=$VESPER_CONFIG VESPER_TEAM=$VESPER_TEAM exec "$NODE" --no-warnings "$MAIN" --login-link

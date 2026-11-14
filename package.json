@@ -1,0 +1,13 @@
+{
+  "name": "vesper",
+  "private": true,
+  "type": "module",
+  "description": "A private iMessage-style chat app for your Hermes agent team",
+  "engines": {
+    "node": ">=24.21"
+  },
+  "scripts": {
+    "test": "VESPER_TEAM=test/fixtures/team.json node --no-warnings --test --test-concurrency=1",
+    "start": "node server/main.mjs"
+  }
+}

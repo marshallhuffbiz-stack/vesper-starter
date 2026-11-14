@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<title>Vesper</title>
+<meta name="description" content="A private chat with your Hermes agent team.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vesper">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
+<meta name="format-detection" content="telephone=no">
+<meta name="holler-build" content="__BUILD__">
+<meta name="referrer" content="no-referrer">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/icon-192.png" type="image/png" sizes="192x192">
+<link rel="stylesheet" href="app.css">
+<script type="module" src="app.js"></script>
+</head>
+<body class="booting">
+<div id="app">
+  <section id="list-pane" class="pane list-pane" aria-label="Conversations">
+    <div id="list-scroll" class="list-scroll">
+      <div class="list-inner">
+        <div class="title-row">
+          <h1 class="large-title wm">Vesper</h1>
+        </div>
+        <div id="live-wrap" class="live-line"><button id="live" class="live" type="button"></button></div>
+        <button id="catchup" class="catchup" type="button" hidden></button>
+        <div id="search-chips" class="sr-chips" role="group" aria-label="Filter search" hidden></div>
+        <div id="conn" class="conn" hidden>Connecting…</div>
+        <div id="push-banner" class="push-slot" hidden></div>
+        <div id="waiting-wrap" class="reveal" aria-hidden="true"><div><div id="waiting" class="needs" role="group" aria-label="Needs you"></div></div></div>
+        <div id="clients-wrap" class="reveal" aria-hidden="true"><div><div id="clients" class="needs clients-sec" role="group" aria-label="Clients"></div></div></div>
+        <div id="later-wrap" class="reveal" aria-hidden="true"><div><div id="later" class="needs later-sec" role="group" aria-label="Later"></div></div></div>
+        <div id="pins" class="pins"></div>
+        <div id="runs-row-wrap" class="cells runs-cells" hidden><button id="docs-row" class="need docs-row" type="button" hidden></button><button id="runs-row" class="need runs-row" type="button" hidden></button></div>
+        <div class="sec-label chats-label">Chats</div>
+        <div id="rows" class="rows"></div>
+        <button id="system-line" class="sys-line" type="button" hidden></button>
+        <div id="search-results" class="sr" hidden></div>
+      </div>
+    </div>
+    <header id="list-bar" class="list-bar">
+      <div class="fade-top" aria-hidden="true"><i></i><i></i></div>
+      <div class="list-bar-title">Vesper</div>
+    </header>
+    <div class="fade-bottom" aria-hidden="true"><i></i></div>
+    <div class="list-search">
+      <label class="search glass blur">
+        <span class="ic search-ic"><svg viewBox="0 0 20 20" width="17" height="17" aria-hidden="true"><circle cx="8.5" cy="8.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="m13 13 4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+        <input id="search-input" type="search" placeholder="Search" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search" aria-label="Search messages, cards, photos and memory">
+      </label>
+    </div>
+    <div class="list-shade" aria-hidden="true"></div>
+  </section>
+
+  <section id="thread-pane" class="pane thread-pane" aria-label="Conversation">
+    <div id="scroller" class="scroller">
+      <div id="msgs" class="msgs" role="log" aria-live="polite"></div>
+    </div>
+    <div class="fade-top thread-fade" aria-hidden="true"><i></i><i></i></div>
+    <div class="fade-bottom thread-fade-b" aria-hidden="true"><i></i></div>
+    <div id="thread-sync" class="th-sync glass blur" role="status" aria-live="polite" hidden></div>
+    <header id="thread-head" class="thread-head">
+      <button id="back-btn" class="back glass" type="button" aria-label="Back">
+        <svg viewBox="0 0 12 21" width="12" height="20" aria-hidden="true"><path d="M10 1.8 1.8 10.5l8.2 8.7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span id="back-count" class="back-count"></span>
+      </button>
+      <div class="head-center">
+        <div id="head-av" class="head-av"></div>
+        <div id="head-name" class="head-name glass"></div>
+        <div id="head-status" class="sr-only" aria-live="polite"></div>
+      </div>
+      <div class="head-right">
+        <button id="info-btn" class="info glass" type="button" aria-label="Details">
+          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><circle cx="12" cy="12" r="9.4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 10.8v5.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="7.6" r="1.15" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </header>
+    <footer id="composer" class="composer">
+      <div id="mention-picker" class="mention-picker glass blur" role="listbox" aria-label="Mention a bot" hidden></div>
+      <div id="reply-bar" class="reply-bar glass blur" hidden></div>
+      <div id="attach-tray" class="attach-tray" hidden></div>
+      <div class="comp-row">
+        <button id="plus-btn" class="plus glass" type="button" aria-label="Add photo">
+          <svg viewBox="0 0 20 20" width="19" height="19" aria-hidden="true"><path d="M10 3.2v13.6M3.2 10h13.6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+        </button>
+        <input id="file-input" type="file" accept="image/*" multiple hidden>
+        <div id="field" class="field glass">
+          <textarea id="input" rows="1" placeholder="iMessage" aria-label="Message" enterkeyhint="enter" autocomplete="off"></textarea>
+          <button id="mic-btn" class="mic" type="button" aria-label="Dictate">
+            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="8.6" y="2.8" width="6.8" height="11.6" rx="3.4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5.6 11.2a6.4 6.4 0 0 0 12.8 0M12 17.6v3.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </button>
+          <button id="send-btn" class="send" type="button" aria-label="Send" disabled>
+            <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true"><path d="M10 16.2V4.2M4.6 9.4 10 4l5.4 5.4" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+    </footer>
+    <div id="thread-empty" class="thread-empty">Choose a conversation</div>
+  </section>
+  <section id="runs-pane" class="runs-pane" aria-label="Runs" aria-hidden="true"></section>
+  <section id="docs-pane" class="docs-pane" aria-label="Deliverables" aria-hidden="true"></section>
+</div>
+<div id="gate" class="gate" role="main"></div>
+</body>
+</html>

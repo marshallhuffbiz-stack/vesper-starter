@@ -1,0 +1,106 @@
+#!/bin/zsh
+# One-time setup of Vesper on this Mac. Safe to run again: every step checks first and skips what is done.
+#
+#   bin/setup            create your team file, Hermes profiles for your bots, connect them, start Vesper
+#   bin/setup --check    only report what is missing
+#
+# Needs: macOS, Node 24+, git, Hermes Agent (curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash).
+set -euo pipefail
+REPO=${0:A:h:h}
+source "$REPO/bin/env.sh"
+CHECK=0
+[[ ${1:-} == --check ]] && CHECK=1
+say() { print -P "%B==>%b $*"; }
+warn() { print -P "%F{yellow}!!%f $*" >&2; }
+
+[[ $(uname) == Darwin ]] || { warn "These scripts use launchd, so they run on macOS. The server itself is plain Node (see README, Other systems)."; exit 1; }
+find_node
+find_hermes
+command -v git >/dev/null || { warn "git is needed (xcode-select --install)"; exit 1; }
+command -v sqlite3 >/dev/null || { warn "sqlite3 is needed (it ships with macOS; xcode-select --install)"; exit 1; }
+say "Node $("$NODE" -v) at $NODE"
+say "Hermes at $HERMES"
+
+# 1. Your team file.
+TEAM=$VESPER_TEAM
+if [[ ! -f $TEAM ]]; then
+  (( CHECK )) && { warn "No team file yet ($TEAM)"; exit 1; }
+  mkdir -p "${TEAM:h}"
+  cp "$REPO/config/team.example.json" "$TEAM"
+  say "Created $TEAM from the example."
+  echo "    Put in your name and your bots (ids are lowercase letters), then run bin/setup again."
+  exit 0
+fi
+export VESPER_TEAM=$TEAM
+BOTLINES=$("$NODE" --no-warnings --input-type=module -e "
+  const m = await import('$REPO/server/team.mjs');
+  for (const b of m.BOTS) console.log([b.id, b.profile, b.name].join('\t'));
+") || { warn "$TEAM has a problem (see above)"; exit 1; }
+say "Team file: $TEAM"
+print -r -- "$BOTLINES" | while IFS=$'\t' read -r id profile name; do echo "    $name (id $id, Hermes profile $profile)"; done
+
+# 2. A Hermes profile per bot, with the Vesper plugin copied in and enabled.
+print -r -- "$BOTLINES" | while IFS=$'\t' read -r id profile name; do
+  dir=$HERMES_HOME/profiles/$profile
+  if [[ ! -d $dir ]]; then
+    (( CHECK )) && { warn "No Hermes profile for $name ($dir)"; continue; }
+    say "Creating Hermes profile $profile for $name (the first one also sets up Hermes's own runtime, a few hundred MB)"
+    "$HERMES" profile create "$profile" --no-alias </dev/null
+    soul=$("$NODE" -e '
+      const t = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
+      const b = (t.bots || []).find((x) => x.id === process.argv[2]);
+      process.stdout.write(b && b.soul ? String(b.soul) : "");' "$TEAM" "$id")
+    if [[ -n $soul ]]; then print -r -- "$soul" > "$dir/SOUL.md"; echo "    wrote $dir/SOUL.md from team.json"; fi
+  fi
+  [[ -d $dir ]] || continue
+  if [[ ! -f $dir/plugins/holler/adapter.py ]]; then
+    (( CHECK )) && { warn "Vesper plugin missing in $profile"; continue; }
+    mkdir -p "$dir/plugins"
+    cp -R "$REPO/hermes-plugin/holler" "$dir/plugins/holler"
+  fi
+  if ! grep -q 'holler-platform' "$dir/config.yaml" 2>/dev/null; then
+    (( CHECK )) && { warn "Vesper plugin not enabled in $profile"; continue; }
+    "$HERMES" -p "$profile" plugins enable holler-platform </dev/null >/dev/null
+    echo "    enabled the Vesper plugin for $profile"
+  fi
+  # Gateway restarts would otherwise post "restarting" / "online" notes into the chat.
+  if [[ -f $dir/config.yaml ]] && ! grep -q '^holler:' "$dir/config.yaml"; then
+    (( CHECK )) || printf '\nholler:\n  gateway_restart_notification: false\n' >> "$dir/config.yaml"
+  fi
+done
+(( CHECK )) || { mkdir -p "$HERMES_HOME/plugins"; [[ -d $HERMES_HOME/plugins/holler ]] || cp -R "$REPO/hermes-plugin/holler" "$HERMES_HOME/plugins/holler"; }
+
+# 3. A token per bot: the hash stays in Vesper's config, the token goes into the bot profile's .env (0600).
+if (( ! CHECK )); then
+  say "Connecting the bots to Vesper"
+  HERMES_HOME=$HERMES_HOME VESPER_CONFIG=$VESPER_CONFIG "$NODE" --no-warnings "$REPO/server/main.mjs" --install-bot-tokens
+fi
+
+# 4. Start Vesper as a background service (launchd), from the committed HEAD of this checkout.
+if (( CHECK )); then
+  launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1 && say "Vesper service is loaded" || warn "Vesper service is not installed yet"
+else
+  say "Installing and starting Vesper"
+  if [[ -n ${VESPER_SKIP_TESTS:-} ]]; then "$REPO/bin/deploy.sh" --skip-tests; else "$REPO/bin/deploy.sh"; fi
+fi
+
+# 5. The Hermes gateway runs every profile's bots (one gateway per Mac). VESPER_SETUP_NO_GATEWAY=1 skips this.
+if (( ! CHECK )) && [[ -z ${VESPER_SETUP_NO_GATEWAY:-} ]]; then
+  say "Starting the Hermes gateway"
+  if ! "$HERMES" gateway restart </dev/null >/dev/null 2>&1; then
+    { "$HERMES" gateway install </dev/null && "$HERMES" gateway start </dev/null; } \
+      || warn "Could not start the gateway; run: $HERMES gateway install && $HERMES gateway start"
+  fi
+fi
+
+PORT=$(vesper_port)
+echo
+say "Done. Next:"
+cat <<EOT
+  1. Sign each bot in to a model, if you have not yet (each profile has its own settings):
+$(print -r -- "$BOTLINES" | while IFS=$'\t' read -r id profile name; do echo "       $HERMES -p $profile model"; done)
+     ChatGPT / Codex plan: pick OpenAI Codex there, or run  $HERMES -p <profile> auth add openai-codex
+     Then reload the bots:  $REPO/bin/restart-gateway.sh
+  2. Open Vesper on this Mac:  $REPO/bin/login-link   (a one-time link to http://127.0.0.1:$PORT)
+  3. On your phone: see "Phone" in the README (Tailscale, then Add to Home Screen).
+EOT

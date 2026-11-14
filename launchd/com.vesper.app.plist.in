@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Vesper server. bin/deploy.sh fills in the @...@ values and installs this as
+  ~/Library/LaunchAgents/com.vesper.app.plist. Started through the `current` release symlink.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>@LABEL@</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>@NODE@</string>
+    <string>--no-warnings</string>
+    <string>@VESPER_HOME@/current/server/main.mjs</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>@VESPER_HOME@</string>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>@HOME@/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <key>VESPER_HOME</key>
+    <string>@VESPER_HOME@</string>
+    <key>VESPER_CONFIG</key>
+    <string>@VESPER_CONFIG@</string>
+    <key>VESPER_TEAM</key>
+    <string>@VESPER_TEAM@</string>
+    <key>VESPER_HERMES_BIN</key>
+    <string>@HERMES@</string>
+    <key>HERMES_HOME</key>
+    <string>@HERMES_HOME@</string>
+  </dict>
+
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>ThrottleInterval</key>
+  <integer>10</integer>
+
+  <!-- Interactive, not Background: this is an app you open and wait on. As a Background job macOS throttles its
+       CPU and disk, and with memory tight a restart can take minutes. -->
+  <key>ProcessType</key>
+  <string>Interactive</string>
+
+  <key>StandardOutPath</key>
+  <string>@VESPER_HOME@/logs/launchd.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>@VESPER_HOME@/logs/launchd.log</string>
+</dict>
+</plist>

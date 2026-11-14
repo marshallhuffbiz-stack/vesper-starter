@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Vesper nightly backup at 3:20 AM (bin/backup.sh). One line per run in logs/backup.log; the System sheet
+  in the app warns when the last good one is older than 36 hours.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>@BACKUP_LABEL@</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/zsh</string>
+    <string>@VESPER_HOME@/current/bin/backup.sh</string>
+  </array>
+
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>3</integer>
+    <key>Minute</key>
+    <integer>20</integer>
+  </dict>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <key>VESPER_HOME</key>
+    <string>@VESPER_HOME@</string>
+    <key>VESPER_CONFIG</key>
+    <string>@VESPER_CONFIG@</string>
+    <key>VESPER_TEAM</key>
+    <string>@VESPER_TEAM@</string>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>@VESPER_HOME@/logs/backup.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>@VESPER_HOME@/logs/backup.log</string>
+</dict>
+</plist>

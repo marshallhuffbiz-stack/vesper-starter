@@ -1,0 +1,30 @@
+name: holler-platform
+label: Vesper
+kind: platform
+version: 1.0.0
+description: >
+  Vesper gateway adapter: a private iMessage-style team chat that runs on your Mac.
+  Each bot profile connects as itself with its own token. Stdlib only.
+author: Vesper
+requires_env:
+  - name: HOLLER_BOT_TOKEN
+    description: "This bot's Vesper token (written by bin/setup)"
+    prompt: "Vesper bot token"
+    password: true
+  - name: HOLLER_BOT_ID
+    description: "This bot's Vesper member id (a bot id from team.json)"
+    prompt: "Vesper bot id"
+    password: false
+optional_env:
+  - name: HOLLER_URL
+    description: "Vesper server URL (default http://127.0.0.1:8802)"
+    prompt: "Holler URL"
+    password: false
+  - name: HOLLER_ALLOWED_USERS
+    description: "Comma-separated Vesper member ids allowed to talk to the bot"
+    prompt: "Allowed member ids"
+    password: false
+  - name: HOLLER_HOME_CHANNEL
+    description: "Chat for cron / notification delivery (default room)"
+    prompt: "Home chat"
+    password: false

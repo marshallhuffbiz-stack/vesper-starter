@@ -1,0 +1,149 @@
+{
+  "you": {
+    "id": "alex",
+    "name": "Alex",
+    "initials": "AL",
+    "colors": [
+      "#3A8DFF",
+      "#0A60FF"
+    ]
+  },
+  "room": {
+    "title": "Team Room",
+    "faces": [
+      "ada",
+      "ben",
+      "cleo"
+    ]
+  },
+  "defaultResponder": "ada",
+  "timezone": "America/New_York",
+  "quietHours": [
+    21,
+    8
+  ],
+  "bots": [
+    {
+      "id": "ada",
+      "name": "Ada",
+      "role": "Ops",
+      "clients": "Gale",
+      "colors": [
+        "#B15CFF",
+        "#6E3BFF"
+      ],
+      "initials": "A",
+      "avatar": "headset",
+      "color": "#7C6CF0",
+      "glyph": "compass"
+    },
+    {
+      "id": "ben",
+      "name": "Ben",
+      "role": "Account manager",
+      "clients": "Acme, Birch, Cedar",
+      "colors": [
+        "#2FD3C6",
+        "#0E8FD6"
+      ],
+      "initials": "B",
+      "avatar": "antenna",
+      "color": "#3B9CFF",
+      "glyph": "mega"
+    },
+    {
+      "id": "cleo",
+      "name": "Cleo",
+      "role": "Account manager",
+      "clients": "Dune, Ember",
+      "colors": [
+        "#FFB547",
+        "#FF6A3D"
+      ],
+      "initials": "C",
+      "avatar": "flower",
+      "color": "#FF8F70",
+      "glyph": "cal"
+    },
+    {
+      "id": "dora",
+      "name": "Dora",
+      "role": "Account manager",
+      "clients": "Fjord",
+      "colors": [
+        "#7BE07A",
+        "#1FA65A"
+      ],
+      "initials": "D",
+      "avatar": "glasses",
+      "color": "#4CD07D",
+      "glyph": "bars"
+    },
+    {
+      "id": "eli",
+      "name": "Eli",
+      "role": "Leads",
+      "clients": "Leads",
+      "colors": [
+        "#FF7A8A",
+        "#D6334F"
+      ],
+      "initials": "E",
+      "avatar": "cap",
+      "color": "#FFB443",
+      "glyph": "radar"
+    }
+  ],
+  "clients": [
+    {
+      "key": "acme",
+      "short": "Acme",
+      "name": "Acme Pressure Washing",
+      "bot": "ben"
+    },
+    {
+      "key": "birch",
+      "short": "Birch",
+      "name": "Birch Mechanical",
+      "bot": "ben",
+      "match": "\\bBirch\\b(?!\\s*County)"
+    },
+    {
+      "key": "cedar",
+      "short": "Cedar",
+      "name": "Cedar Boutique",
+      "bot": "ben"
+    },
+    {
+      "key": "dune",
+      "short": "Dune",
+      "name": "Dune Eats",
+      "bot": "cleo"
+    },
+    {
+      "key": "ember",
+      "short": "Ember",
+      "name": "Ember Custom",
+      "bot": "cleo"
+    },
+    {
+      "key": "fjord",
+      "short": "Fjord",
+      "name": "Fjord Garage Doors",
+      "bot": "dora"
+    },
+    {
+      "key": "gale",
+      "short": "Gale",
+      "name": "Gale Capital",
+      "bot": "ada"
+    },
+    {
+      "key": "leads",
+      "short": "Leads",
+      "name": "Leads",
+      "bot": "eli",
+      "match": "^Leads?\\b"
+    }
+  ]
+}
