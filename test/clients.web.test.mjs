@@ -19,7 +19,7 @@ function seed(messages) {
 test('a card belongs to the client its head names; leads are one client; the server’s reading wins', () => {
   setBoard({ clients: [], map: { 9: 'fjord' } });
   assert.equal(keyOf(card(1, 1, '**Acme Pressure Washing**: keep the ads')), 'acme');
-  assert.equal(keyOf(card(2, 1, 'Doing: **Dune Dune**: post the flyer')), 'dune');
+  assert.equal(keyOf(card(2, 1, 'Doing: **Dune Eats**: post the flyer')), 'dune');
   assert.equal(keyOf(card(3, 1, '**Lead: Northside Mobile Welding**: text back')), 'leads');
   assert.equal(keyOf(card(4, 1, 'Approval needed: run `ls`')), null);
   assert.equal(keyOf(card(9, 1, '**Team**: a card the outbox says is Fjord’s')), 'fjord');

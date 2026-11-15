@@ -101,7 +101,7 @@ test('the board works without an outbox, and its card reading matches the app', 
   assert.equal(out.outbox, false);
   assert.ok(out.clients.find((c) => c.key === 'acme').need.length >= 2, 'need still comes from the threads');
   assert.equal(clientBoard({ store, teamops: {}, now: clock }).outbox, false);
-  assert.equal(keyOfCard('Doing: **Dune Dune**: post the flyer (#4)'), 'dune');
+  assert.equal(keyOfCard('Doing: **Dune Eats**: post the flyer (#4)'), 'dune');
   assert.equal(keyOfCard('**Lead: Pat Smith**: call back (#5)'), 'leads');
   assert.equal(keyOfCard('**Birch County Schools**: a stranger (#6)'), null);
   assert.equal(keyOfCard('Approval needed: run `ls`'), null);

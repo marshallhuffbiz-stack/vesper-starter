@@ -20,7 +20,7 @@ export function urlsIn(text, max = 2) {
 
 const hostOf = (url) => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch { return ''; } };
 
-// "https://buy.stripe.com/test_00example0002" reads as "buy.stripe.com/test_00e…".
+// "https://buy.stripe.com/test_00example0002" reads as "buy.stripe.com/test_00…".
 export function shortUrl(url) {
   try {
     const u = new URL(url);

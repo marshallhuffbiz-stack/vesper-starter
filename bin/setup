@@ -93,6 +93,7 @@ if (( ! CHECK )) && [[ -z ${VESPER_SETUP_NO_GATEWAY:-} ]]; then
   fi
 fi
 
+(( CHECK )) && { say "Check finished (nothing was changed)."; exit 0; }
 PORT=$(vesper_port)
 echo
 say "Done. Next:"

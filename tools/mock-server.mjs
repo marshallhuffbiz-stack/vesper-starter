@@ -215,7 +215,7 @@ function seed() {
   push({ chat_id: 'room', sender: 'ben', text: 'Four options are on the pick board. Option 2 tested best with the office crew.', at: day(1, 16, 5) });
   push({ chat_id: 'room', sender: 'ben', text: 'Want me to print proofs of 2 and 4?', at: day(1, 16, 5) + 20000 });
   push({ chat_id: 'room', sender: ME, text: 'Hold until I look tonight.', at: day(1, 16, 7) });
-  push({ chat_id: 'room', sender: 'cleo', text: 'Dune Dune Sunday lineup is drafted. 6 trucks confirmed, 2 pending.', at: day(1, 16, 9), reactions: [{ member_id: ME, emoji: '❤️' }] });
+  push({ chat_id: 'room', sender: 'cleo', text: 'Dune Eats Sunday lineup is drafted. 6 trucks confirmed, 2 pending.', at: day(1, 16, 9), reactions: [{ member_id: ME, emoji: '❤️' }] });
   push({ chat_id: 'room', sender: 'ada', text: 'Approval needed: restart the launchd job `com.example.lead-desk` on the Mac.', at: day(1, 18, 30), buttons: [[{ label: 'Approve once', data: 'appr:r1:once', style: 'primary' }, { label: 'Deny', data: 'appr:r1:deny', style: 'danger' }]], resolved: { label: 'Approve once', data: 'appr:r1:once', style: 'primary', by: ME, at: day(1, 18, 34) } });
   push({ chat_id: 'room', sender: 'ada', text: 'Restarted. Lead Desk is back up.', at: day(1, 18, 35) });
   // Today.
@@ -246,7 +246,7 @@ function seed() {
 
   push({ chat_id: 'dm-cleo', sender: 'cleo', at: day(3, 14, 0), text: 'Ember sent 40 new photos. I picked 8 for the feed.' });
   push({ chat_id: 'dm-cleo', sender: ME, at: day(3, 14, 30), text: 'Show me the 8 tomorrow.' });
-  push({ chat_id: 'dm-cleo', sender: 'cleo', at: now - 4 * 60000, text: '**Dune Dune**: tell the vendors the Truck Meet starts at 5 PM (#412)\n\nText to 9 vendors:\n"Truck Meet update: we now open at 5 PM Saturday. Same spot, same setup time."', buttons: [[{ label: 'Approve', data: 'a|412|h', style: 'primary' }, { label: 'Always: Dune vendor updates', data: 'w|412|h', style: '' }, { label: 'Decline', data: 'n|412|h', style: 'danger' }]] });
+  push({ chat_id: 'dm-cleo', sender: 'cleo', at: now - 4 * 60000, text: '**Dune Eats**: tell the vendors the Truck Meet starts at 5 PM (#412)\n\nText to 9 vendors:\n"Truck Meet update: we now open at 5 PM Saturday. Same spot, same setup time."', buttons: [[{ label: 'Approve', data: 'a|412|h', style: 'primary' }, { label: 'Always: Dune vendor updates', data: 'w|412|h', style: '' }, { label: 'Decline', data: 'n|412|h', style: 'danger' }]] });
 
   push({ chat_id: 'dm-dora', sender: 'dora', at: now - 2 * 3600 * 1000, text: 'Fjord asked if we can add a Saturday call window. Want me to set it up?' });
   // Vesper 10-30: a finished text with a Stripe link, a bot pointing at a card, a link with a preview.

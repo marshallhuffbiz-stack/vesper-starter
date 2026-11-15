@@ -75,7 +75,8 @@ async def wait_for(pred, timeout=5.0):
 
 
 async def main(tmp: Path):
-    env = {**os.environ, "HOLLER_HOME": str(tmp / "home"), "HOLLER_CONFIG": str(tmp / "config.json")}
+    env = {**os.environ, "VESPER_HOME": str(tmp / "home"), "VESPER_CONFIG": str(tmp / "config.json"),
+           "VESPER_TEAM": str(ROOT / "test" / "fixtures" / "team.json")}
     (tmp / "config.json").write_text(json.dumps({"port": PORT, "hosts": ["127.0.0.1"],
                                                  "botTokens": {"ben": hashlib.sha256(TOKEN.encode()).hexdigest()}}))
     server = subprocess.Popen([NODE, "--no-warnings", str(ROOT / "server/main.mjs")], env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)

@@ -475,10 +475,10 @@ export function clientOf(name) {
 export function clientMark(c, size = 20) {
   const cl = typeof c === 'string' ? clientOf(c) : c;
   if (!cl) return null;
-  const el = h('span', { class: `clmark${cl.fill ? ' fill' : ''}${cl.logo ? '' : ' plain'}`, style: { '--s': `${size}px` }, title: cl.short, 'aria-hidden': 'true', dataset: { client: cl.key } });
+  // A client without a logo shows its initial, drawn by CSS (::before) so it never becomes part of the row's text.
+  const el = h('span', { class: `clmark${cl.fill ? ' fill' : ''}${cl.logo ? '' : ' plain'}`, style: { '--s': `${size}px` }, title: cl.short, 'aria-hidden': 'true', dataset: { client: cl.key, ...(cl.logo || cl.glyph ? {} : { initial: cl.initial || String(cl.short || '?').slice(0, 1) }) } });
   if (cl.logo) el.append(h('img', { src: `icons/clients/${cl.logo}.webp`, alt: '', draggable: 'false', decoding: 'async' }));
   else if (cl.glyph) el.innerHTML = GLYPHS[cl.glyph];
-  else el.append(h('span', {}, cl.initial));
   return el;
 }
 

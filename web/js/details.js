@@ -130,7 +130,7 @@ function build(chatId) {
     const cl = m.clients || [];
     kids.push(card('Clients', ...(cl.length ? cl.map((c) => h('label', { class: 'dt-row dt-client' }, clientMark(c, 30),
       h('span', { class: 'dt-cl' }, c, h('small', { dataset: { pst: c } }, '')),
-      PAUSABLE.has(c) ? h('input', { type: 'checkbox', class: 'rt-tog pause', role: 'switch', disabled: true, 'aria-label': `Pause ${c}`, dataset: { pause: c } }) : null)) : [h('div', { class: 'dt-row dt-empty' }, 'No clients')])));
+      h('input', { type: 'checkbox', class: 'rt-tog pause', role: 'switch', disabled: true, hidden: !PAUSABLE.has(c), 'aria-label': `Pause ${c}`, dataset: { pause: c } }))) : [h('div', { class: 'dt-row dt-empty' }, 'No clients')])));
     fillPauses();
     const since = startOfToday();
     let today = 0, appr = 0;
@@ -232,12 +232,13 @@ async function saveRules(patch) {
   if (box && now) box.replaceChildren(rulesCard(now));
 }
 
-// Clients with a pause switch: the ones a teamops hook reports (GET /api/clients); none in this starter.
+// Clients with a pause switch: the ones a teamops hook reports (GET /api/clients); none in this starter. Each
+// client row has the switch hidden until the report names that client.
 const PAUSABLE = { has: (short) => !!clientIds[short] };
 let clientIds = {};
 const pauseNote = (c) => (c.paused ? `Paused${c.since ? ` since ${new Date(c.since).toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' })}` : ''}: nothing goes out` : 'Pause holds every send and change');
 function showPause(c) {
-  for (const t of el.querySelectorAll(`input[data-pause="${CSS.escape(c.short)}"]`)) { t.checked = c.paused; t.disabled = false; }
+  for (const t of el.querySelectorAll(`input[data-pause="${CSS.escape(c.short)}"]`)) { t.checked = c.paused; t.disabled = false; t.hidden = false; }
   for (const s of el.querySelectorAll(`[data-pst="${CSS.escape(c.short)}"]`)) { s.textContent = pauseNote(c); s.classList.toggle('on', c.paused); }
 }
 async function fillPauses() {

@@ -58,11 +58,11 @@ for (const scheme of schemes) {
   // 10-30: a bot's clients show as their own logos after its name (the names stay in the label).
   const names = await p.evaluate(() => {
     const el = [...document.querySelectorAll('.rc-name')].find((e) => e.textContent.startsWith('Ben'));
-    const marks = [...(el?.querySelectorAll('.clstack .clmark img') || [])];
-    return { text: el?.textContent, label: el?.getAttribute('aria-label'), marks: marks.map((i) => i.getAttribute('src')), loaded: marks.every((i) => i.complete && i.naturalWidth > 0) };
+    const marks = [...(el?.querySelectorAll('.clstack .clmark') || [])];
+    return { text: el?.textContent, label: el?.getAttribute('aria-label'), marks: marks.map((i) => i.dataset.client), loaded: marks.length > 0 };
   });
-  check(names.text === 'Ben' && names.label === 'Ben (Acme, Birch, Cedar)' && names.marks.join() === 'icons/clients/acme.webp,icons/clients/birch.webp,icons/clients/cedar.webp' && names.loaded,
-    `${scheme}: bots show their clients as logos after the name (${names.text} + ${names.marks.length} logos, label "${names.label}")`);
+  check(names.text === 'Ben' && names.label === 'Ben (Acme, Birch, Cedar)' && names.marks.join() === 'acme,birch,cedar' && names.loaded,
+    `${scheme}: bots show their clients as marks after the name (${names.text} + ${names.marks.length} logos, label "${names.label}")`);
 
   // Open the room by tapping its row, time the push. On a touch screen opening a chat adds no history
   // entry, so iOS's own edge swipe (a snapshot plus a replayed close: the "reload" flash) never runs.
@@ -202,8 +202,8 @@ for (const scheme of schemes) {
     await p.waitForTimeout(700);
     await p.evaluate(() => { window.__nodes = [...document.querySelectorAll('#msgs > *')]; });
     if (chat === 'dm-dora') {
-      const sub = await p.evaluate(() => ({ text: document.querySelector('.hn-sub')?.textContent || '', logo: document.querySelector('.hn-clients .clmark img')?.getAttribute('src') || '' }));
-      check(sub.text === 'Fjord' && sub.logo === 'icons/clients/fjord.webp', `${scheme}: thread header shows the bot's clients with their logo (${sub.text}, ${sub.logo})`);
+      const sub = await p.evaluate(() => ({ text: document.querySelector('.hn-sub')?.textContent || '', logo: document.querySelector('.hn-clients .clmark')?.dataset.client || '' }));
+      check(sub.text === 'Fjord' && sub.logo === 'fjord', `${scheme}: thread header shows the bot's clients with their mark (${sub.text}, ${sub.logo})`);
     }
     await p.locator('#head-name').click();
     await p.waitForTimeout(700);
@@ -352,7 +352,7 @@ for (const scheme of schemes) {
   await p.waitForTimeout(500);
   // Tasks that are not waiting (Doing, Auto reply, finished cards) read as cards too: the app, a plain title,
   // the actual words, where it stands; no ids or phone endings. A long plain bot message folds behind More.
-  await inject({ chat_id: 'dm-cleo', sender: 'cleo', text: `Doing: **Dune Dune**: publish the corrected flyer on Facebook and Instagram (#34)\n\nPost the fixed 3-8 PM flyer to both pages. Postiz id cmv14kuwp00b6pm6c3q9j4ii5 checked.\n\nDetails:\n${plan}`, typing_ms: 0 });
+  await inject({ chat_id: 'dm-cleo', sender: 'cleo', text: `Doing: **Dune Eats**: publish the corrected flyer on Facebook and Instagram (#34)\n\nPost the fixed 3-8 PM flyer to both pages. Postiz id cmv14kuwp00b6pm6c3q9j4ii5 checked.\n\nDetails:\n${plan}`, typing_ms: 0 });
   await inject({ chat_id: 'dm-cleo', sender: 'cleo', text: 'Auto reply: **Ember Custom**: flyer time fixed (#35)\n\nText to Nina Work (ends 0142):\n"Hey Nina, the flyer now says 3-8 PM."\n\nSent on its own. Texted Nina Work (ends 0142) at 2:20 PM, sent, delivery not confirmed yet (SMS).', typing_ms: 0 });
   await p.waitForTimeout(700);
   const tasks = await p.evaluate(() => [...document.querySelectorAll('.tk')].slice(-2).map((t) => ({ title: t.querySelector('.ap-title').textContent, sub: t.querySelector('.ap-sub')?.textContent, duo: !!t.querySelector('.appmark.duo .mini'), note: t.querySelector('.tk-note')?.textContent, bub: t.querySelector('.tk-bub')?.textContent, st: t.querySelector('.tk-st')?.textContent, why: t.querySelector('.tk-why')?.textContent, more: !!t.querySelector('.appr-more'), all: t.textContent })));
@@ -436,7 +436,7 @@ for (const scheme of schemes) {
   await p.locator('.rn-back').click();
   await p.waitForTimeout(700);
   check(await p.evaluate(() => !document.body.classList.contains('runs-open') && location.hash === '#/'), `${scheme}: back leaves Runs for the list`);
-  await inject({ chat_id: 'dm-cleo', sender: 'cleo', typing_ms: 0, text: '**Dune Dune**: tell the vendors the Truck Meet starts at 5 PM (#512)\n\nText to 9 vendors:\n"Truck Meet update: we now open at 5 PM Saturday. Same spot, same setup time."',
+  await inject({ chat_id: 'dm-cleo', sender: 'cleo', typing_ms: 0, text: '**Dune Eats**: tell the vendors the Truck Meet starts at 5 PM (#512)\n\nText to 9 vendors:\n"Truck Meet update: we now open at 5 PM Saturday. Same spot, same setup time."',
     buttons: [[{ label: 'Approve', data: 'a|512|h', style: 'primary' }, { label: 'Decline', data: 'n|512|h', style: 'danger' }]] });
   await p.goto(`${BASE}/#/chat/dm-cleo`);
   await p.waitForTimeout(900);
@@ -514,12 +514,12 @@ for (const scheme of schemes) {
   // ── Vesper 10-30 ──
   // The agent page: each client row carries its logo; the week is seven bars, today in full color.
   const page = await p.evaluate(() => ({
-    clients: [...document.querySelectorAll('.dt-client')].map((r) => [r.textContent, !!r.querySelector('.clmark img')]),
+    clients: [...document.querySelectorAll('.dt-client')].map((r) => [r.textContent, !!r.querySelector('.clmark')]),
     bars: [...document.querySelectorAll('.wk-col')].length,
     today: (() => { const b = document.querySelector('.wk-col.today .wk-bar'); return b ? [getComputedStyle(b).opacity, b.getBoundingClientRect().height, b.getBoundingClientRect().width] : null; })(),
     tip: document.querySelector('.wk-tip')?.textContent || '',
   }));
-  check(page.clients.length === 3 && page.clients.every(([, logo]) => logo), `${scheme}: agent page client rows show each client's logo (${page.clients.map(([t]) => t).join(', ')})`);
+  check(page.clients.length === 3 && page.clients.every(([, logo]) => logo), `${scheme}: agent page client rows show each client's mark (${page.clients.map(([t]) => t).join(', ')})`);
   check(page.bars === 7 && page.today && page.today[0] === '1' && page.today[1] > 4 && page.today[2] <= 24 && /runs?/.test(page.tip), `${scheme}: the week is seven bars, today full color, 24px wide at most (${page.tip})`);
   if (scheme === 'light') await p.screenshot({ path: `${out}/agent-week-${scheme}.png` });
   await p.locator('.dt-back').click();
@@ -536,15 +536,15 @@ for (const scheme of schemes) {
   const stripe = await p.evaluate(() => {
     const tk = [...document.querySelectorAll('.tk')].find((t) => /payment link/.test(t.textContent));
     const lp = tk?.querySelector('.tk-sms .lk');
-    return { bub: tk?.querySelector('.tk-bub')?.textContent || '', lp: lp?.textContent || '', h: lp?.getBoundingClientRect().height, logo: !!lp?.querySelector('img[src$="stripe.svg"]'), cl: tk?.querySelector('.ap-sub.has-cl .clmark img')?.getAttribute('src') || '' };
+    return { bub: tk?.querySelector('.tk-bub')?.textContent || '', lp: lp?.textContent || '', h: lp?.getBoundingClientRect().height, logo: !!lp?.querySelector('img[src$="stripe.svg"]'), cl: tk?.querySelector('.ap-sub.has-cl .clmark')?.dataset.client || '' };
   });
-  check(/buy\.stripe\.com\/test_cN…/.test(stripe.bub) && !/test_00example0001/.test(stripe.bub) && /\$375 payment link/.test(stripe.lp) && /Not paid yet/.test(stripe.lp) && stripe.logo && stripe.h === 64,
+  check(/buy\.stripe\.com\/test_00…/.test(stripe.bub) && !/test_00example0001/.test(stripe.bub) && /\$375 payment link/.test(stripe.lp) && /Not paid yet/.test(stripe.lp) && stripe.logo && stripe.h === 64,
     `${scheme}: a Stripe link reads as a short address plus a preview card (${stripe.lp}, ${stripe.h}px)`);
-  check(stripe.cl === 'icons/clients/acme.webp', `${scheme}: the card's sub line starts with the client's logo (${stripe.cl})`);
+  check(stripe.cl === 'acme', `${scheme}: the card's sub line starts with the client's mark (${stripe.cl})`);
   // Moods: a bot with a card waiting on Alex is perked up; one doing nothing follows the clock.
   const moods = await p.evaluate(() => Object.fromEntries([...document.querySelectorAll('.chat-row')].map((r) => [r.dataset.chat, r.querySelector('.av img')?.getAttribute('src') || ''])));
   const hr = new Date().getHours();
-  check(/cleo-perk\.webp$/.test(moods['dm-cleo']) && (hr >= 21 || hr < 8 ? /ada-sleep\.webp$/ : /ada\.webp$/).test(moods['dm-ada']),
+  check(/flower-perk\.webp$/.test(moods['dm-cleo']) && (hr >= 21 || hr < 8 ? /headset-sleep\.webp$/ : /headset\.webp$/).test(moods['dm-ada']),
     `${scheme}: friends show their mood (Cleo ${moods['dm-cleo']?.split('/').pop()}, Ada ${moods['dm-ada']?.split('/').pop()})`);
   // "card #412" in Cleo's words is a chip with the card's app and title; tapping it opens the card.
   await p.goto(`${BASE}/#/chat/dm-cleo`);
